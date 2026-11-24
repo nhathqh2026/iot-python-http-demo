@@ -1,0 +1,12 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Data generated during the demo
+data.csv
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
