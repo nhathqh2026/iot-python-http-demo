@@ -20,7 +20,7 @@ Hai Client độc lập, cùng truy cập HTTP Server chạy **trên laptop cá 
 
 ## 2. Chuẩn bị môi trường
 
-Yêu cầu: **Python 3.10+**, có `pip`. Tải repository về máy (Git clone hoặc **Code → Download ZIP**) rồi mở Terminal trong thư mục `iot-http-demo`.
+Yêu cầu: **Python 3.10+**, có `pip`. Tải repository về máy (Git clone hoặc **Code → Download ZIP**) rồi mở Terminal trong thư mục `iot-python-http-demo`.
 
 ### Windows (PowerShell) — không cần activate virtual environment
 
@@ -99,15 +99,11 @@ Ví dụ file `data.csv` sau 2 lần POST:
 
 ```csv
 timestamp,area,lux
-2025-05-02 05:44:35,1,500
-2025-05-02 05:44:40,1,520
+2026-11-25 05:44:35,1,500
+2026-11-25 05:44:40,1,520
 ```
 
-Timestamp do **Sensor Client tạo ở thời điểm lấy phép đo**, dùng đồng hồ **giờ địa phương của máy chạy Sensor Client**, định dạng `YYYY-MM-DD HH:MM:SS` (chính xác đến giây, không kèm mili-giây). Server **không tự tạo lại timestamp** mà kiểm tra và ghi đúng giá trị nhận được. Thời gian thực tế sẽ khác ví dụ trên.
-
-Để bài demo đơn giản và dễ quan sát, **mỗi lần chạy `sensor_client.py` chỉ gửi một phép đo**. Chưa cần vòng lặp gửi mỗi 5 giây hay tự sinh lux ngẫu nhiên; đây có thể là bài tập mở rộng.
-
-> Định dạng minh họa không chứa múi giờ. Trong hệ thống nhiều thiết bị thực tế, nên dùng timestamp có thông tin múi giờ (ví dụ UTC theo ISO 8601) và đồng bộ đồng hồ thiết bị.
+Timestamp do **Sensor Client tạo ở thời điểm lấy phép đo**, dùng đồng hồ **giờ địa phương của máy chạy Sensor Client**, định dạng `YYYY-MM-DD HH:MM:SS` (chính xác đến giây, không kèm mili-giây).
 
 ## 5. API Contract
 
@@ -121,15 +117,8 @@ Request Body (`application/json`):
 
 Response: **201 Created**
 
-```json
-{
-  "status": "success",
-  "measurement": {
-    "timestamp": "2025-05-02 05:44:35",
-    "area": 1,
-    "lux": 500
-  }
-}
+```text
+  "success"
 ```
 
 Yêu cầu: `timestamp` là chuỗi theo đúng định dạng `YYYY-MM-DD HH:MM:SS` và là thời điểm hợp lệ; `area` là số nguyên dương; `lux` là số không âm. Ba trường đều bắt buộc.
@@ -144,60 +133,11 @@ Response: **200 OK**
 
 ```json
 {
-  "area": 1,
   "count": 1,
-  "measurements": [
+  "data": [
     {"timestamp": "2025-05-02 05:44:35", "area": 1, "lux": 500}
   ]
 }
 ```
 
-Nếu chưa có phép đo phù hợp: `200 OK` với `"count": 0` và `"measurements": []`. Nếu `area` không hợp lệ: `400 Bad Request`.
-
-> **Lưu ý:** GET ở demo này trả về **danh sách bản ghi**, khác ví dụ minh họa tối giản `{ "area": 1, "lux": 500 }` trong slide lý thuyết. Cách thiết kế này giúp sinh viên quan sát việc Server lưu trữ nhiều phép đo.
-
-## 6. Kiểm tra tự động (tùy chọn)
-
-Sau khi cài dependencies, mở một Terminal và chạy:
-
-**Windows:**
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest -v test_demo
-```
-
-**macOS / Linux:**
-
-```bash
-./.venv/bin/python -m unittest -v test_demo
-```
-
-Các bài kiểm tra dùng Flask test client và một CSV tạm; **không làm thay đổi `data.csv` của demo**.
-
-## 7. Bài tập gợi ý cho sinh viên
-
-1. Chạy Sensor Client ba lần với các giá trị `lux` khác nhau; quan sát file CSV và kết quả GET.
-2. Gửi dữ liệu cho `area=2`; kiểm tra Client 2 chỉ nhận đúng khu vực được yêu cầu. Đối chiếu `timestamp` trong Client, CSV và Response.
-3. Gửi `--lux -5`: giải thích vì sao Server trả `400 Bad Request` và không ghi dữ liệu.
-4. **Mở rộng:** chỉnh Sensor Client để gửi một phép đo mỗi 5 giây, có thể tạo ngẫu nhiên `lux` trong một khoảng định trước.
-5. **Mở rộng thêm:** bổ sung tham số lọc các phép đo có `lux` lớn hơn một ngưỡng định trước.
-
-## 8. Lưu ý và xử lý sự cố
-
-- **Connection refused / ConnectionError:** Chưa chạy `server.py` hoặc Server đang ở cổng khác. Hãy giữ Terminal Server mở.
-- **Port 5000 is in use:** Dừng tiến trình đang chiếm cổng 5000 trước khi chạy demo.
-- **ModuleNotFoundError:** Kiểm tra đã cài `requirements.txt` và gọi đúng Python trong `.venv`.
-- **CSV có dữ liệu cũ (hoặc timestamp từ phiên bản trước):** Dừng Server, xóa file `data.csv`, chạy lại Server và Client 1 để làm mới.
-- **Security:** Chương trình chỉ phục vụ mục đích học tập, chạy HTTP trên `127.0.0.1` và chưa có HTTPS, xác thực người dùng, hay cơ chế lưu trữ an toàn cho nhiều Client đồng thời. Không mở trực tiếp ra Internet. `app.run()` là development server, không phải production server.
-
-## 9. Kiến thức HTTP được minh họa
-
-| Kiến thức | Trong code |
-|---|---|
-| HTTP Client–Server | `requests` → Flask Server |
-| POST | `requests.post(..., json=data)` |
-| GET + Query Parameters | `requests.get(..., params={"area": 1})` |
-| HTTP Status Codes | `201`, `200`, `400`, `415` |
-| Request/Response Body | JSON |
-| Sensor-generated timestamp | `datetime.now().strftime("%Y-%m-%d %H:%M:%S")` trong Client 1 |
-| Persistence | CSV file trên Server |
+Nếu chưa có phép đo phù hợp: `200 OK` với `"count": 0` và `"data": []`.
