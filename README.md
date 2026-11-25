@@ -22,21 +22,13 @@ Hai Client độc lập, cùng truy cập HTTP Server chạy **trên laptop cá 
 
 Yêu cầu: **Python 3.10+**, có `pip`. Tải repository về máy (Git clone hoặc **Code → Download ZIP**) rồi mở Terminal trong thư mục `iot-python-http-demo`.
 
-### Windows (PowerShell) — không cần activate virtual environment
+Hướng dẫn cài Python cho Windows: https://www.pythonguis.com/installation/install-python-windows/
 
 ```powershell
-py -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-Nếu máy không nhận lệnh `py`, thay bằng `python` khi tạo virtual environment. Các lệnh phía dưới sử dụng Python trong `.venv`, không cần thay đổi Execution Policy của PowerShell.
-
-### macOS / Linux
-
-```bash
-python3 -m venv .venv
-./.venv/bin/python -m pip install -r requirements.txt
-```
+Nếu máy không nhận lệnh `python`, thì thay bằng `py`.
 
 > Chỉ lần đầu mới cần cài thư viện Flask và requests. Các lần chạy sau không cần cài lại.
 
@@ -49,13 +41,13 @@ python3 -m venv .venv
 **Terminal 1 — HTTP Server:**
 
 ```powershell
-.\.venv\Scripts\python.exe server.py
+python server.py
 ```
 
 **Terminal 2 — Client 1: upload dữ liệu cảm biến (POST):**
 
 ```powershell
-.\.venv\Scripts\python.exe sensor_client.py
+python sensor_client.py
 ```
 
 Kỳ vọng: Client 1 tạo `timestamp` theo đồng hồ của máy, gửi cùng `area=1`, `lux=500`; nhận `HTTP status: 201`. Server lưu nguyên timestamp từ Client vào `data.csv`.
@@ -63,20 +55,10 @@ Kỳ vọng: Client 1 tạo `timestamp` theo đồng hồ của máy, gửi cùn
 **Terminal 3 — Client 2: truy xuất dữ liệu (GET):**
 
 ```powershell
-.\.venv\Scripts\python.exe viewer_client.py
+python viewer_client.py
 ```
 
 Kỳ vọng: `HTTP status: 200`; Terminal hiển thị phép đo vừa được lưu.
-
-### macOS / Linux
-
-Thực hiện theo cùng thứ tự bằng các lệnh:
-
-```bash
-./.venv/bin/python server.py
-./.venv/bin/python sensor_client.py
-./.venv/bin/python viewer_client.py
-```
 
 Chạy mỗi lệnh ở một Terminal riêng. Dừng Server bằng `Ctrl+C`.
 
@@ -85,13 +67,11 @@ Chạy mỗi lệnh ở một Terminal riêng. Dừng Server bằng `Ctrl+C`.
 Trên Windows:
 
 ```powershell
-.\.venv\Scripts\python.exe sensor_client.py --area 1 --lux 520
-.\.venv\Scripts\python.exe sensor_client.py --area 2 --lux 300
-.\.venv\Scripts\python.exe viewer_client.py --area 1
-.\.venv\Scripts\python.exe viewer_client.py --area 2
+python sensor_client.py --area 1 --lux 520
+python sensor_client.py --area 2 --lux 300
+python viewer_client.py --area 1
+python viewer_client.py --area 2
 ```
-
-macOS/Linux: thay ` .\.venv\Scripts\python.exe ` bằng ` ./.venv/bin/python `.
 
 Mỗi lần chạy Sensor Client sẽ **thêm một dòng mới** vào CSV. Client 2 trả về **danh sách tất cả phép đo** thuộc khu vực được yêu cầu (không chỉ phép đo mới nhất).
 
